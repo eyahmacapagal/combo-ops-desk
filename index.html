@@ -108,7 +108,7 @@
       margin-bottom: 10px;
     }
     .entry-row > * { width: 100% !important; flex: none !important; }
-    .entry-row .entry-remove { align-self: flex-end; width: auto !important; padding: 4px 14px !important; }
+    .entry-row .entry-remove { align-self: flex-end; width: auto !important; padding: 6px 16px !important; font-weight: 700; }
     table { font-size: 12px; }
   }
   .od-select, .od-input, .od-textarea {
@@ -337,6 +337,14 @@
     }
   });
 
+  // Delegated (not bound per-render) so "+ Add entry" keeps working reliably across
+  // re-renders, name switches, and any in-app browser quirks (e.g. Messenger's WebView).
+  root.addEventListener('click', (e) => {
+    const btn = e.target.closest('.add-entry-row-btn');
+    if (!btn) return;
+    addRepeatableRow(btn.dataset.container, btn.dataset.withName === 'true');
+  });
+
   function todayStr() {
     return new Date().toISOString().slice(0,10);
   }
@@ -385,15 +393,10 @@
       <input class="od-input entry-desc" style="flex:2" placeholder="Description" />
       <input class="od-input entry-link" style="flex:1" type="url" placeholder="Link (optional)" />
       <select class="od-select entry-status" style="width:100px"><option value="Open">Open</option><option value="Escalated">Escalated</option></select>
-      <button type="button" class="entry-remove" style="background:none;border:1px solid var(--border);color:var(--text-muted);border-radius:5px;width:30px;cursor:pointer;">×</button>
+      <button type="button" class="entry-remove" title="Remove this entry" style="background:none;border:1.5px solid var(--warn);color:var(--warn);border-radius:5px;width:32px;height:32px;font-size:16px;font-weight:700;cursor:pointer;flex-shrink:0;">×</button>
     `;
     row.querySelector('.entry-remove').addEventListener('click', () => row.remove());
     container.appendChild(row);
-  }
-
-  function setupRepeatableRows(containerId, addBtnId, withName) {
-    const btn = document.getElementById(addBtnId);
-    if (btn) btn.addEventListener('click', () => addRepeatableRow(containerId, withName));
   }
 
   function collectRepeatableRows(containerId) {
@@ -717,11 +720,11 @@
 
           <div class="od-section-label">1. Concern Description</div>
           <div id="concern-rows"></div>
-          <button type="button" class="od-btn" style="padding:6px 12px;font-size:12px;background:var(--surface-raised);color:var(--text);border:1px solid var(--border);" id="add-concern-row">+ Add concern entry</button>
+          <button type="button" class="od-btn add-entry-row-btn" style="padding:6px 12px;font-size:12px;background:var(--surface-raised);color:var(--text);border:1px solid var(--border);" data-container="concern-rows" data-with-name="false">+ Add concern entry</button>
 
           <div class="od-section-label">2. Feedback Description</div>
           <div id="feedback-rows"></div>
-          <button type="button" class="od-btn" style="padding:6px 12px;font-size:12px;background:var(--surface-raised);color:var(--text);border:1px solid var(--border);" id="add-feedback-row">+ Add feedback entry</button>
+          <button type="button" class="od-btn add-entry-row-btn" style="padding:6px 12px;font-size:12px;background:var(--surface-raised);color:var(--text);border:1px solid var(--border);" data-container="feedback-rows" data-with-name="true">+ Add feedback entry</button>
 
           <div class="od-section-label">3. Bug / Issue Report <span style="color:var(--gold)">(due every 3 days — filled in as part of this daily report)</span></div>
           <div class="od-field">
@@ -731,7 +734,7 @@
 
           <div class="od-section-label">4. Suggestion Description</div>
           <div id="suggestion-rows"></div>
-          <button type="button" class="od-btn" style="padding:6px 12px;font-size:12px;background:var(--surface-raised);color:var(--text);border:1px solid var(--border);" id="add-suggestion-row">+ Add suggestion entry</button>
+          <button type="button" class="od-btn add-entry-row-btn" style="padding:6px 12px;font-size:12px;background:var(--surface-raised);color:var(--text);border:1px solid var(--border);" data-container="suggestion-rows" data-with-name="true">+ Add suggestion entry</button>
 
           <div class="od-section-label">5. Facebook Group Moderation</div>
           <div class="od-row">
@@ -739,9 +742,6 @@
             <div class="od-field" style="width:160px"><label class="od-label">Approved posts</label><input class="od-input" id="s-approved-posts" type="number" min="0" placeholder="0" /></div>
           </div>
         `;
-        setupRepeatableRows('concern-rows', 'add-concern-row', false);
-        setupRepeatableRows('feedback-rows', 'add-feedback-row', true);
-        setupRepeatableRows('suggestion-rows', 'add-suggestion-row', true);
         addRepeatableRow('concern-rows', false);
         addRepeatableRow('feedback-rows', true);
         addRepeatableRow('suggestion-rows', true);
