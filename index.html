@@ -521,7 +521,7 @@
     let productSvg = '';
     PRODUCTS.forEach((p, i) => {
       const colX = stacked ? 20 : 20 + i * (colW + colGap);
-      const centerX = colX + colW / 2;
+      const centerX = stacked ? (svgWidth / 2) : (colX + colW / 2);
       const leadX = centerX - leadBoxW / 2;
       const leadY = stacked ? (LEAD_Y + i * (leadBoxH + stackGap)) : LEAD_Y;
       const logoY = leadY + 10, logoH = 64, logoW = 180;
