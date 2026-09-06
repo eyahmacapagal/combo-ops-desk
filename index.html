@@ -93,6 +93,22 @@
     .od-main { padding: 18px 14px; }
     .od-h1 { font-size: 17px; }
     .od-card { width: 100% !important; max-width: 100%; }
+    /* Any field with a fixed pixel width (Approved members, Reactions, group size, etc.)
+       forces itself full-width instead of squeezing down on narrow screens. */
+    .od-field { width: 100% !important; }
+    /* Entry rows (Concern/Feedback/Suggestion) pack 5-6 inputs on one line on desktop —
+       that has no room to breathe on a phone, so stack each field on its own line instead. */
+    .entry-row {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 6px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .entry-row > * { width: 100% !important; flex: none !important; }
+    .entry-row .entry-remove { align-self: flex-end; width: auto !important; padding: 4px 14px !important; }
     table { font-size: 12px; }
   }
   .od-select, .od-input, .od-textarea {
