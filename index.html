@@ -502,26 +502,40 @@
     }
 
     // Build one repeatable column per product — add an entry to PRODUCTS to extend this.
-    const colW = 380, colGap = 40;
+    // On narrow screens, stack the products vertically instead of side-by-side, so the
+    // person scrolls down (normal) instead of sideways to see every product.
+    const stacked = window.innerWidth <= 760;
     const n = PRODUCTS.length;
-    const svgWidth = n * colW + (n - 1) * colGap + 40;
+    const leadBoxW = 340;
     const leadBoxH = 322;
-    const LEAD_Y = 140; // top of each product's lead box — leaves room for the bigger company banner above
-    const svgHeight = LEAD_Y + leadBoxH + 20;
+    const LEAD_Y = 140; // top of the first product's lead box — leaves room for the company banner above
+    const stackGap = 50; // vertical gap between stacked product boxes on narrow screens
+
+    const colW = stacked ? leadBoxW + 40 : 380;
+    const colGap = 40;
+    const svgWidth = stacked ? colW : (n * colW + (n - 1) * colGap + 40);
+    const svgHeight = stacked
+      ? LEAD_Y + n * leadBoxH + (n - 1) * stackGap + 20
+      : LEAD_Y + leadBoxH + 20;
 
     let productSvg = '';
     PRODUCTS.forEach((p, i) => {
-      const colX = 20 + i * (colW + colGap);
+      const colX = stacked ? 20 : 20 + i * (colW + colGap);
       const centerX = colX + colW / 2;
-      const leadBoxW = 340;
       const leadX = centerX - leadBoxW / 2;
-      const leadY = LEAD_Y;
+      const leadY = stacked ? (LEAD_Y + i * (leadBoxH + stackGap)) : LEAD_Y;
       const logoY = leadY + 10, logoH = 64, logoW = 180;
       const avR = 32, avCy = logoY + logoH + 12 + avR, avCx = centerX;
 
+      // First box connects up to the company banner; in stacked mode, later boxes
+      // connect down from the box directly above them instead.
+      const connectorTop = (stacked && i > 0)
+        ? `<line x1="${centerX}" y1="${LEAD_Y + (i-1) * (leadBoxH + stackGap) + leadBoxH}" x2="${centerX}" y2="${leadY}" stroke="var(--border)" stroke-width="1.5"/>`
+        : `<line x1="${centerX}" y1="130" x2="${centerX}" y2="${leadY}" stroke="var(--border)" stroke-width="1.5"/>`;
+
       productSvg += `
-        <!-- connector from company to this product -->
-        <line x1="${centerX}" y1="130" x2="${centerX}" y2="${leadY}" stroke="var(--border)" stroke-width="1.5"/>
+        <!-- connector -->
+        ${connectorTop}
 
         <!-- product lead box -->
         <rect x="${leadX}" y="${leadY}" width="${leadBoxW}" height="${leadBoxH}" rx="6" fill="var(--surface-raised)" stroke="${p.accent}" stroke-width="1.5"/>
