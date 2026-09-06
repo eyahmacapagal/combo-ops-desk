@@ -527,16 +527,7 @@
       const logoY = leadY + 10, logoH = 64, logoW = 180;
       const avR = 32, avCy = logoY + logoH + 12 + avR, avCx = centerX;
 
-      // First box connects up to the company banner; in stacked mode, later boxes
-      // connect down from the box directly above them instead.
-      const connectorTop = (stacked && i > 0)
-        ? `<line x1="${centerX}" y1="${LEAD_Y + (i-1) * (leadBoxH + stackGap) + leadBoxH}" x2="${centerX}" y2="${leadY}" stroke="var(--border)" stroke-width="1.5"/>`
-        : `<line x1="${centerX}" y1="130" x2="${centerX}" y2="${leadY}" stroke="var(--border)" stroke-width="1.5"/>`;
-
       productSvg += `
-        <!-- connector -->
-        ${connectorTop}
-
         <!-- product lead box -->
         <rect x="${leadX}" y="${leadY}" width="${leadBoxW}" height="${leadBoxH}" rx="6" fill="var(--surface-raised)" stroke="${p.accent}" stroke-width="1.5"/>
         ${logoImg(centerX - logoW/2, logoY, logoW, logoH, p.logo)}
